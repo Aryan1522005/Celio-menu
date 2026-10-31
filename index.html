@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8edcf">
+<meta name="description" content="Celio Sky Kitchen and Bar — food and drinks menu. Get 50% off your total bill.">
+<title>Celio Sky | Kitchen and Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#a66a13;--deep:#4a2b0c;--paper:#fff6df;--cream:#f8edcf}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"DM Sans",sans-serif}
+body{min-height:100vh;color:var(--deep);background:radial-gradient(ellipse at 50% 0%,#fffdf3 0%,#f8edcf 62%,#ead7a8 100%);display:grid;place-items:center;padding:22px;overflow-x:hidden}
+.frame{width:min(100%,760px);min-height:min(880px,calc(100vh - 44px));position:relative;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 30px;background:linear-gradient(145deg,rgba(255,251,235,.94),rgba(250,236,202,.93));border:2px solid #bd8b37;box-shadow:0 16px 55px #5a3a1424}
+.frame:before{content:"";position:absolute;inset:10px;border:1px solid #c69a4d;pointer-events:none}
+.frame:after{content:"";position:absolute;inset:17px;background:repeating-linear-gradient(135deg,transparent 0 28px,rgba(177,133,58,.035) 29px 30px);pointer-events:none}
+.corner{position:absolute;color:#b27a22;font-family:Georgia,serif;font-size:36px;line-height:1}
+.tl{top:20px;left:22px}.tr{top:20px;right:22px}.bl{bottom:20px;left:22px}.br{bottom:20px;right:22px}
+.content{position:relative;z-index:1;width:min(100%,570px)}
+.ornament{color:#a66a13;font-size:34px;letter-spacing:8px;margin-bottom:12px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:#78501b;margin:0 0 14px}
+h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(43px,9vw,76px);line-height:.98;margin:0;color:#75450d;text-shadow:0 2px 0 #e9c77c}
+h1 span{display:block;font-size:.42em;letter-spacing:.22em;margin-top:16px;color:#4d3215}
+.rule{height:1px;width:75%;margin:25px auto;background:linear-gradient(90deg,transparent,#b88a3e,transparent)}
+.promo{display:inline-block;padding:12px 22px;border:1px solid #a56c1c;background:#f3dfad;color:#6d3e08;font-size:clamp(18px,4vw,25px);font-weight:800;letter-spacing:.07em;box-shadow:0 4px 12px #7a4a1620}
+.promo small{display:block;font-size:10px;letter-spacing:.2em;margin-bottom:4px}
+.description{font-size:14px;line-height:1.8;color:#6b5636;max-width:450px;margin:20px auto 26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:58px;width:min(100%,310px);border-radius:3px;border:1px solid #6e460f;background:linear-gradient(135deg,#8a5814,#bd862b);color:#fff8e7;text-decoration:none;font-weight:800;font-size:16px;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 7px 18px #6e460f38;transition:transform .2s,filter .2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.brandline{font-family:"Playfair Display",serif;font-size:16px;letter-spacing:.12em;margin-top:26px;color:#8d611e}
+.address{font-size:11px;color:#806d4d;line-height:1.7;margin-top:15px}
+.popup{position:fixed;inset:0;z-index:10;background:rgba(38,24,8,.88);display:grid;place-items:center;padding:22px;animation:overlayIn .45s ease both;cursor:pointer;touch-action:manipulation}
+.popup-card{width:min(100%,500px);padding:42px 25px 30px;text-align:center;background:linear-gradient(145deg,#fffdf2 0%,#fff2d0 48%,#efd49a 100%);border:2px solid #bd8b37;outline:1px solid #d5b36d;outline-offset:-9px;box-shadow:0 18px 65px #0006;cursor:pointer;position:relative;overflow:hidden;animation:offerEnter .8s cubic-bezier(.2,.8,.2,1) both,offerFloat 2.8s ease-in-out .8s infinite}
+.popup-card:before{content:"";position:absolute;inset:-60% -30%;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.68) 49%,transparent 58%);transform:translateX(-75%) rotate(12deg);animation:shine 2.8s ease-in-out .5s infinite;pointer-events:none}
+.popup-card>*{position:relative;z-index:1}
+.popup-kicker{font-size:10px;letter-spacing:.25em;font-weight:800;color:#876020;animation:kickerIn .7s .25s both}
+.popup-number{font-family:"Playfair Display",Georgia,serif;font-size:clamp(76px,18vw,116px);line-height:1;color:#8e5910;margin:12px 0 0;text-shadow:0 3px 0 #e9c77c;animation:numberPop .85s .2s both}
+.popup-off{font-family:"Playfair Display",Georgia,serif;font-size:clamp(27px,6vw,38px);color:#4b2c0d;margin:0;animation:kickerIn .7s .4s both}
+.popup-copy{font-size:13px;line-height:1.7;color:#765c35;margin:15px auto 0;max-width:330px;animation:kickerIn .7s .5s both}
+.popup-hint{font-size:10px;letter-spacing:.12em;color:#9b7a45;margin-top:25px;text-transform:uppercase;animation:hintPulse 1.2s ease-in-out infinite}
+.popup-progress{height:4px;width:min(230px,75%);margin:17px auto 0;background:#dfc58f;border-radius:10px;overflow:hidden;position:relative;z-index:1}
+.popup-progress span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#8e5910,#d6a94d);transform-origin:left;animation:countdown 5s linear forwards}
+.popup.leaving{animation:overlayOut .35s ease forwards;pointer-events:none}
+.popup.leaving .popup-card{animation:offerExit .35s ease forwards}
+.popup[hidden]{display:none}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+@keyframes overlayOut{to{opacity:0;visibility:hidden}}
+@keyframes offerEnter{0%{opacity:0;transform:translateY(35px) scale(.82) rotate(-2deg)}70%{opacity:1;transform:translateY(-5px) scale(1.025) rotate(0)}100%{transform:translateY(0) scale(1)}}
+@keyframes offerFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes numberPop{0%{opacity:0;transform:scale(.45) rotate(-8deg)}65%{opacity:1;transform:scale(1.12) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes kickerIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shine{0%,25%{transform:translateX(-75%) rotate(12deg)}70%,100%{transform:translateX(75%) rotate(12deg)}}
+@keyframes hintPulse{0%,100%{opacity:.65}50%{opacity:1}}
+@keyframes countdown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes offerExit{to{opacity:0;transform:scale(.94) translateY(12px)}}
+@media(max-width:520px){body{padding:12px}.frame{min-height:calc(100vh - 24px);padding:50px 20px}.frame:before{inset:7px}.frame:after{inset:12px}.corner{font-size:27px}.description{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.popup-card{transform:none!important}}
+</style>
+</head>
+<body>
+<main class="frame">
+  <span class="corner tl">❧</span><span class="corner tr">❧</span>
+  <span class="corner bl">❧</span><span class="corner br">❧</span>
+  <div class="content">
+    <div class="ornament">✦ ❧ ✦</div>
+    <p class="eyebrow">Welcome to</p>
+    <h1>CELIO SKY<span>KITCHEN AND BAR</span></h1>
+    <div class="rule"></div>
+    <div class="promo"><small>SPECIAL OFFER</small>50% OFF ON TOTAL BILL</div>
+    <p class="description">Discover our food and drinks menu — from signature cocktails and refreshing mocktails to tandoor favourites, Asian flavours and indulgent desserts.</p>
+    <a class="btn" href="menu.html">View Menu <span aria-hidden="true">　→</span></a>
+    <div class="brandline">A Taste Worth Remembering</div>
+    <div class="address">Somani Trade Center, near JSPM College,<br>Ashok Nagar, Tathawade, Pune 411033</div>
+  </div>
+</main>
+<div class="popup" id="offerPopup" role="dialog" aria-modal="true" aria-label="50 percent discount offer">
+  <div class="popup-card" id="popupCard" tabindex="0">
+    <div class="ornament">✦ ❧ ✦</div>
+    <div class="popup-kicker">A SPECIAL WELCOME OFFER</div>
+    <div class="popup-number">50%</div>
+    <h2 class="popup-off">DISCOUNT</h2>
+    <div class="rule"></div>
+    <p class="popup-copy">Enjoy <strong>50% OFF ON YOUR TOTAL BILL</strong> at Celio Sky Kitchen and Bar.</p>
+    <div class="popup-hint">Tap anywhere to explore</div>
+    <div class="popup-progress" aria-hidden="true"><span></span></div>
+  </div>
+</div>
+<script>
+(() => {
+  const popup = document.getElementById("offerPopup");
+  let dismissed = false;
+  let timer;
+  const close = () => {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(timer);
+    popup.classList.add("leaving");
+    window.setTimeout(() => { popup.hidden = true; }, 360);
+  };
+  // Tap/click anywhere on the offer screen to enter the menu immediately.
+  popup.addEventListener("pointerup", close);
+  // Automatically dismiss the offer after five seconds.
+  timer = window.setTimeout(close, 5000);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") close();
+  });
+  document.getElementById("popupCard").focus({preventScroll:true});
+})();
+</script>
+</body>
+</html>
