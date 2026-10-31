@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8edcf">
+<title>Celio Sky | Food & Drinks Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#a66a13;--deep:#4a2b0c;--paper:#fff6df;--cream:#f8edcf}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#e9dfc7;color:#2e2518;font-family:"DM Sans",sans-serif}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#5c390e,#8d5b17);color:#fff8e8;padding:13px 16px 15px;box-shadow:0 4px 16px #25150455;border-bottom:2px solid #c79a4b}
+.header-row{display:flex;align-items:center;gap:12px;max-width:1050px;margin:auto}
+.back{border:1px solid #ffffff8c;background:#ffffff17;color:#fff8e8;border-radius:3px;padding:10px 13px;font-weight:700;cursor:pointer;font-family:inherit}
+.title{font-family:"Playfair Display",Georgia,serif;font-size:clamp(21px,4vw,30px);font-weight:700;flex:1}
+.kind{font:700 10px "DM Sans",sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.8;margin-top:3px}
+.offer{font-size:11px;font-weight:800;letter-spacing:.08em;text-align:center;color:#ffedc2;border:1px solid #e6c17d;padding:7px 10px;white-space:nowrap}
+.search-area{max-width:780px;margin:14px auto 0;position:relative}
+#searchInput{width:100%;height:50px;border:1px solid #d2b477;border-radius:3px;padding:0 48px 0 17px;font:15px "DM Sans",sans-serif;color:#342411;background:#fff9e9;outline-offset:3px}
+.search-icon{position:absolute;right:17px;top:11px;font-size:24px;color:#8a5b18}
+#searchResults{display:none;max-width:780px;margin:8px auto 0;background:#fffdf6;color:#222;border:1px solid #d8bd82;border-radius:3px;overflow:hidden;max-height:48vh;overflow-y:auto;box-shadow:0 7px 20px #0003}
+.result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border-bottom:1px solid #eee4ce;cursor:pointer}
+.result:last-child{border-bottom:0}.result:hover,.result:focus{background:#f6edda;outline:none}
+.result-name{font-size:14px;font-weight:700}.result-meta{font-size:11px;color:#786b55;margin-top:4px}.price{font-weight:800;color:#87550e;white-space:nowrap;font-size:14px}
+.no-results{padding:18px;text-align:center;font-size:14px;color:#786b55}
+.menu-label{background:#f6e9c8;color:#76501b;text-align:center;padding:12px;font:700 12px "DM Sans",sans-serif;letter-spacing:.16em;border-bottom:1px solid #d4b36f}
+#pdfLoading{padding:20px;text-align:center;color:#6e5837;font-size:14px}
+#pdfViewer{padding:12px;background:#3b3328;min-height:60vh}
+.pdf-page{width:100%;max-width:1000px;margin:0 auto 14px;background:#fff;scroll-margin-top:180px;box-shadow:0 3px 14px #0006;border:1px solid #c69b4e}
+.pdf-page canvas{display:block;width:100%;height:auto}
+.error{background:#fff9e9;color:#6a1018;padding:20px;text-align:center;line-height:1.6}
+footer{background:#f6e9c8;color:#775522;text-align:center;padding:14px;font-size:10px;letter-spacing:.13em}
+@media(max-width:600px){header{padding:10px}.header-row{gap:8px}.back{padding:9px 10px;font-size:12px}.title{font-size:20px}.offer{font-size:9px;padding:6px 7px}#searchInput{height:47px;font-size:14px}#pdfViewer{padding:5px}.pdf-page{margin-bottom:8px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <button class="back" type="button" onclick="location.href='index.html'">← Home</button>
+    <div class="title"><div>CELIO SKY</div><div class="kind">Kitchen and Bar · Food & Drinks</div></div>
+    <div class="offer">50% OFF<br> TOTAL BILL</div>
+  </div>
+  <div class="search-area">
+    <input id="searchInput" type="search" placeholder="Search food, drinks or cocktails..." autocomplete="off" aria-label="Search menu items">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+  </div>
+  <div id="searchResults" role="listbox" aria-label="Search results"></div>
+</header>
+<div class="menu-label">✦　THE COMPLETE CELIO SKY MENU　✦</div>
+<div id="pdfLoading">Loading menu pages…</div>
+<main id="pdfViewer" aria-label="Full menu PDF pages"></main>
+<footer>CELIO SKY KITCHEN AND BAR · SOMANI TRADE CENTER · TATHAWADE, PUNE</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="menu-data.js"></script>
+<script>
+(() => {
+  const pdfUrl = "celio-menu.pdf";
+  const data = (window.MENU_DATA && window.MENU_DATA.menu) || [];
+  const input = document.getElementById("searchInput");
+  const results = document.getElementById("searchResults");
+  const viewer = document.getElementById("pdfViewer");
+  const loading = document.getElementById("pdfLoading");
+  let renderGeneration = 0;
+
+  function normalize(value) {
+    return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+
+  function showResults(query) {
+    results.innerHTML = "";
+    const q = normalize(query);
+    if (!q) { results.style.display = "none"; return; }
+    const terms = q.split(/\s+/);
+    const matches = data.map(item => {
+      const searchable = normalize([item.name, item.category, ...(item.aliases || [])].join(" "));
+      const exact = searchable.includes(q);
+      const allTerms = terms.every(term => searchable.includes(term));
+      return {item, score: exact ? 0 : allTerms ? 1 : 99};
+    }).filter(x => x.score < 99)
+      .sort((a,b) => a.score-b.score || a.item.name.localeCompare(b.item.name))
+      .slice(0, 40);
+
+    results.style.display = "block";
+    if (!matches.length) {
+      results.innerHTML = '<div class="no-results">No matching items found. Try another spelling.</div>';
+      return;
+    }
+    for (const {item} of matches) {
+      const row = document.createElement("div");
+      row.className = "result";
+      row.tabIndex = 0;
+      row.setAttribute("role", "option");
+      const left = document.createElement("div");
+      const name = document.createElement("div");
+      name.className = "result-name";
+      name.textContent = item.name;
+      const meta = document.createElement("div");
+      meta.className = "result-meta";
+      meta.textContent = item.category + " · PDF page " + item.page;
+      const price = document.createElement("div");
+      price.className = "price";
+      price.textContent = item.price ? "₹" + item.price : "Ask us";
+      left.append(name, meta);
+      row.append(left, price);
+      const jump = () => {
+        const target = document.getElementById("pdf-page-" + item.page);
+        results.style.display = "none";
+        input.blur();
+        if (target) {
+          target.scrollIntoView({behavior:"smooth", block:"start"});
+          target.animate([{outline:"3px solid #d6a33e"},{outline:"0px solid transparent"}], {duration:1400});
+        } else {
+          loading.textContent = "That PDF page is not ready yet. Please try again in a moment.";
+        }
+      };
+      row.addEventListener("click", jump);
+      row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jump(); } });
+      results.appendChild(row);
+    }
+  }
+  input.addEventListener("input", () => showResults(input.value));
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".search-area") && !e.target.closest("#searchResults")) results.style.display = "none";
+  });
+
+  async function loadPdf() {
+    const generation = ++renderGeneration;
+    try {
+      if (!window.pdfjsLib) throw new Error("The PDF viewer library did not load. Check your internet connection.");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+      if (generation !== renderGeneration) return;
+      viewer.innerHTML = "";
+      const containers = [];
+      for (let pageNo=1; pageNo<=pdf.numPages; pageNo++) {
+        const section = document.createElement("section");
+        section.className = "pdf-page";
+        section.id = "pdf-page-" + pageNo;
+        section.setAttribute("aria-label", "Menu page " + pageNo);
+        viewer.appendChild(section);
+        containers.push(section);
+      }
+      for (let pageNo=1; pageNo<=pdf.numPages; pageNo++) {
+        if (generation !== renderGeneration) return;
+        const page = await pdf.getPage(pageNo);
+        const section = containers[pageNo-1];
+        const baseViewport = page.getViewport({scale:1});
+        const availableWidth = Math.max(240, section.clientWidth || viewer.clientWidth - 16);
+        const scale = availableWidth / baseViewport.width;
+        const viewport = page.getViewport({scale});
+        const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d", {alpha:false});
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = "100%";
+        canvas.style.height = "auto";
+        section.appendChild(canvas);
+        await page.render({canvasContext:context, viewport, transform:outputScale !== 1 ? [outputScale,0,0,outputScale,0,0] : null}).promise;
+      }
+      loading.style.display = "none";
+    } catch (error) {
+      loading.innerHTML = "";
+      const message = document.createElement("div");
+      message.className = "error";
+      message.textContent = "Could not load the menu PDF. Upload celio-menu.pdf beside index.html, menu.html and menu-data.js. " + error.message;
+      loading.appendChild(message);
+    }
+  }
+  loadPdf();
+})();
+</script>
+</body>
+</html>
